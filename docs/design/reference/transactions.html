@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InferenceOS — Transactions Ledger</title>
+<!-- Typography: Space Grotesk, Plus Jakarta Sans, DM Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&amp;family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container": "#1b1f2a",
+            "inverse-primary": "#005ac2",
+            "on-primary-container": "#00285c",
+            "on-error": "#690005",
+            "tertiary-fixed": "#ffdadb",
+            "surface": "#0f131e",
+            "background": "#0f131e",
+            "surface-dim": "#0f131e",
+            "on-tertiary-container": "#5b0017",
+            "error-container": "#93000a",
+            "secondary-fixed": "#6cfe90",
+            "primary-container": "#4c8eff",
+            "on-primary-fixed-variant": "#004494",
+            "error": "#ffb4ab",
+            "surface-tint": "#adc6ff",
+            "secondary-fixed-dim": "#4ce177",
+            "on-error-container": "#ffdad6",
+            "on-secondary": "#003915",
+            "surface-container-low": "#171b26",
+            "on-surface-variant": "#c2c6d6",
+            "on-secondary-container": "#003e18",
+            "outline-variant": "#424753",
+            "secondary": "#4ce177",
+            "primary-fixed": "#d8e2ff",
+            "secondary-container": "#00b652",
+            "outline": "#8c909f",
+            "surface-variant": "#313440",
+            "inverse-surface": "#dfe2f1",
+            "primary": "#adc6ff",
+            "on-secondary-fixed": "#002109",
+            "tertiary-container": "#ff506b",
+            "on-surface": "#dfe2f1",
+            "inverse-on-surface": "#2c303c",
+            "on-background": "#dfe2f1",
+            "on-tertiary": "#67001b",
+            "tertiary": "#ffb2b7",
+            "surface-container-lowest": "#0a0e18",
+            "on-primary": "#002e69",
+            "on-primary-fixed": "#001a41",
+            "tertiary-fixed-dim": "#ffb2b7",
+            "surface-container-high": "#262a35",
+            "on-tertiary-fixed-variant": "#92002a",
+            "surface-bright": "#353945",
+            "primary-fixed-dim": "#adc6ff",
+            "on-tertiary-fixed": "#40000e",
+            "on-secondary-fixed-variant": "#005321",
+            "surface-container-highest": "#313440"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "margin": "1rem",
+            "gutter": "1rem",
+            "space-xl": "2rem",
+            "space-xs": "0.25rem",
+            "margin-desktop": "2rem",
+            "gutter-desktop": "1.5rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "body-sm": ["Plus Jakarta Sans"],
+            "metric-xl": ["DM Mono"],
+            "metric-md": ["DM Mono"],
+            "metric-lg": ["DM Mono"],
+            "headline-md": ["Space Grotesk"],
+            "body-md": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "headline-xl-mobile": ["Space Grotesk"],
+            "headline-xl": ["Space Grotesk"],
+            "headline-lg": ["Space Grotesk"],
+            "body-lg": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "metric-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "500" }],
+            "metric-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "metric-lg": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "headline-md": ["18px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-xl-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Institutional custom scrollbars and subtle hairline styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0e18;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #313440;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #424753;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    .material-symbols-fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased selection:bg-primary-container selection:text-on-primary min-h-screen flex">
+<!-- SIDEBAR NAVIGATION (Shared Component: SideNavBar) -->
+<aside class="fixed top-0 left-0 h-screen w-60 bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-between py-4 px-3 z-30 select-none">
+<!-- Sidebar Header & Primary Groups -->
+<div class="flex flex-col space-y-5">
+<!-- Wordmark Header -->
+<div class="px-2 pt-1 pb-2">
+<div class="flex items-center space-x-2">
+<span class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight">InferenceOS</span>
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-primary-container shadow-[0_0_8px_rgba(76,142,255,0.8)]"></span>
+</div>
+<p class="font-label-sm text-label-sm text-outline tracking-wider mt-0.5 uppercase">FROM DATA TO DECISIONS</p>
+</div>
+<!-- Navigation Hierarchy -->
+<nav class="flex flex-col space-y-4">
+<!-- Group: DASHBOARD -->
+<div>
+<span class="px-2 text-[10px] font-semibold text-outline uppercase tracking-wider block mb-1">DASHBOARD</span>
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]">space_dashboard</span>
+<span>Dashboard</span>
+</a>
+</div>
+<!-- Group: PORTFOLIO -->
+<div>
+<span class="px-2 text-[10px] font-semibold text-outline uppercase tracking-wider block mb-1">PORTFOLIO</span>
+<div class="flex flex-col space-y-0.5">
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]">pie_chart</span>
+<span>Portfolio</span>
+</a>
+<!-- Transactions (ACTIVE) -->
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-primary bg-surface-container-low border-l-2 border-primary font-semibold transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px] material-symbols-fill">receipt_long</span>
+<span>Transactions</span>
+</a>
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span>Dividends</span>
+</a>
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]">balance</span>
+<span>Rebalance</span>
+</a>
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]">auto_stories</span>
+<span>Scenario Book</span>
+</a>
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]">list_alt</span>
+<span>Orders</span>
+</a>
+</div>
+</div>
+<!-- Group: INTELLIGENCE -->
+<div>
+<span class="px-2 text-[10px] font-semibold text-outline uppercase tracking-wider block mb-1">INTELLIGENCE</span>
+<div class="flex flex-col space-y-0.5">
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]">radar</span>
+<span>Scanner</span>
+</a>
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]">notifications_active</span>
+<span>Alerts</span>
+</a>
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+<span>Research</span>
+</a>
+</div>
+</div>
+<!-- Group: SYSTEM -->
+<div>
+<span class="px-2 text-[10px] font-semibold text-outline uppercase tracking-wider block mb-1">SYSTEM</span>
+<a class="flex items-center space-x-2.5 px-2.5 py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors duration-150 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>Settings</span>
+</a>
+</div>
+</nav>
+</div>
+<!-- Sidebar Footer & User Chip -->
+<div class="pt-3 border-t border-outline-variant space-y-3">
+<!-- User Chip -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-low border border-outline-variant/50">
+<div class="flex items-center space-x-2.5 min-w-0">
+<div class="w-7 h-7 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-metric-md text-xs font-semibold">
+            DK
+          </div>
+<div class="truncate">
+<div class="flex items-center space-x-1.5">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface truncate">Daniel K.</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-primary-container/20 text-primary border border-primary/30">PRO</span>
+</div>
+<p class="font-label-sm text-[10px] text-outline truncate">Pro plan</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[16px]">more_vert</span>
+</div>
+</div>
+</aside>
+<!-- TOP APP BAR (Shared Component: TopNavBar) -->
+<header class="fixed top-0 right-0 left-60 h-14 bg-surface-container border-b border-outline-variant flex items-center justify-between px-6 z-20 select-none">
+<!-- Left Region: Search & System Scope -->
+<div class="flex items-center space-x-4 flex-1 max-w-xl">
+<!-- Search Input with Ctrl+K -->
+<div class="relative w-full max-w-md">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</div>
+<input class="w-full h-8 pl-9 pr-14 bg-surface rounded-lg border border-outline-variant text-body-sm font-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition-colors" placeholder="Search tickers, orders, scenarios..." type="text"/>
+<div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+<kbd class="px-1.5 py-0.5 text-[10px] font-metric-md text-outline bg-surface-container-high rounded border border-outline-variant">Ctrl K</kbd>
+</div>
+</div>
+<!-- Portfolio Selector Dropdown -->
+<div class="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-surface-container-low border border-outline-variant hover:border-outline cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-primary text-[16px]">folder_special</span>
+<span class="font-body-sm text-body-sm font-medium text-on-surface whitespace-nowrap">Long-term</span>
+<span class="material-symbols-outlined text-outline text-[16px]">arrow_drop_down</span>
+</div>
+</div>
+<!-- Right Region: Currency, Operational Status, Actions & Profile -->
+<div class="flex items-center space-x-4">
+<!-- Currency Toggle -->
+<div class="flex items-center bg-surface-container-lowest p-0.5 rounded-lg border border-outline-variant">
+<button class="px-2.5 py-0.5 rounded font-metric-md text-xs font-semibold bg-primary text-on-primary transition-all">USD</button>
+<button class="px-2.5 py-0.5 rounded font-metric-md text-xs text-outline hover:text-on-surface transition-all">ILS</button>
+</div>
+<!-- Operational Status Pill -->
+<div class="flex items-center space-x-2 px-2.5 py-1 rounded-full bg-surface-container-low border border-outline-variant">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Operating normally</span>
+</div>
+<!-- Action Icons -->
+<div class="flex items-center space-x-1 border-l border-outline-variant pl-3">
+<button class="p-1.5 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Notifications">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+</div>
+<!-- Profile Avatar -->
+<div class="w-8 h-8 rounded-full border border-outline-variant overflow-hidden flex items-center justify-center bg-surface-variant text-on-surface text-xs font-medium" title="User Analyst Profile Avatar">
+<span class="font-metric-md font-semibold">DK</span>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS CONTENT AREA -->
+<main class="ml-60 pt-14 w-[calc(100%-15rem)] min-h-screen bg-surface-container flex flex-col justify-between p-6">
+<div class="max-w-[1240px] w-full mx-auto space-y-6">
+<!-- PAGE HEADER -->
+<section class="flex items-start justify-between">
+<div>
+<h1 class="font-headline-xl text-headline-xl font-semibold text-on-surface tracking-tight">Transactions</h1>
+<p class="font-body-md text-body-md text-outline mt-1 max-w-2xl">
+            Every buy, sell, deposit, dividend and fee. Holdings, cash and returns are derived from this ledger.
+          </p>
+</div>
+<div class="flex items-center space-x-3 pt-1">
+<!-- CSV Export Button -->
+<button class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface border border-outline-variant font-label-md text-label-md transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Export</span>
+</button>
+<!-- Primary Add Transaction Button -->
+<button class="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md font-semibold transition-all shadow-[0_2px_12px_rgba(76,142,255,0.25)]">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Add Transaction</span>
+</button>
+</div>
+</section>
+<!-- FILTER & CONTROL BAR -->
+<section class="flex flex-wrap items-center justify-between gap-4 p-2.5 rounded-xl bg-surface-container-low border border-outline-variant">
+<!-- Segmented Filter Chips -->
+<div class="flex items-center space-x-1 bg-surface-container-lowest p-1 rounded-lg border border-outline-variant/60">
+<button class="px-3 py-1 rounded font-body-sm text-body-sm font-semibold bg-primary-container text-on-primary transition-all">All</button>
+<button class="px-3 py-1 rounded font-body-sm text-body-sm text-outline hover:text-on-surface hover:bg-surface-container transition-all">Buy</button>
+<button class="px-3 py-1 rounded font-body-sm text-body-sm text-outline hover:text-on-surface hover:bg-surface-container transition-all">Sell</button>
+<button class="px-3 py-1 rounded font-body-sm text-body-sm text-outline hover:text-on-surface hover:bg-surface-container transition-all">Dep</button>
+<button class="px-3 py-1 rounded font-body-sm text-body-sm text-outline hover:text-on-surface hover:bg-surface-container transition-all">Wdr</button>
+<button class="px-3 py-1 rounded font-body-sm text-body-sm text-outline hover:text-on-surface hover:bg-surface-container transition-all">Div</button>
+<button class="px-3 py-1 rounded font-body-sm text-body-sm text-outline hover:text-on-surface hover:bg-surface-container transition-all">Fee</button>
+</div>
+<!-- Dropdowns and Quick Metadata -->
+<div class="flex items-center space-x-3">
+<!-- Account selector -->
+<div class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant text-body-sm font-body-sm cursor-pointer hover:border-outline transition-colors">
+<span class="material-symbols-outlined text-[16px] text-outline">account_balance</span>
+<span class="text-on-surface">All Accounts (IBKR Main)</span>
+<span class="material-symbols-outlined text-[16px] text-outline">arrow_drop_down</span>
+</div>
+<!-- Date range selector -->
+<div class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant text-body-sm font-body-sm cursor-pointer hover:border-outline transition-colors">
+<span class="material-symbols-outlined text-[16px] text-outline">calendar_today</span>
+<span class="text-on-surface">Last 12 Months (2026)</span>
+<span class="material-symbols-outlined text-[16px] text-outline">arrow_drop_down</span>
+</div>
+<!-- Ledger Counter Pill -->
+<div class="px-2.5 py-1 rounded bg-surface-container-high border border-outline-variant font-metric-md text-xs text-on-surface-variant">
+            312 records
+          </div>
+</div>
+</section>
+<!-- TRANSACTIONS LEDGER TABLE (Bento Sheet Container) -->
+<section class="rounded-xl border border-outline-variant bg-surface-container-low overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse ">
+<thead>
+<tr class="h-10 border-b border-outline-variant bg-surface-container-lowest/60 text-outline font-label-sm text-label-sm uppercase tracking-wider select-none">
+<th class="pl-3 pr-2 py-2 font-medium">Date</th>
+<th class="px-2 py-2 font-medium">Type</th>
+<th class="px-2 py-2 font-medium">Symbol</th>
+<th class="px-2 py-2 font-medium">Account</th>
+<th class="px-2 py-2 font-medium text-right">Shares</th>
+<th class="px-2 py-2 font-medium text-right">Price</th>
+<th class="px-2 py-2 font-medium text-right">Fees</th>
+<th class="px-2 py-2 font-medium text-right">Amount</th>
+<th class="px-2 py-2 font-medium text-right">Cash after</th>
+<th class="pr-3 pl-2 py-2 font-medium text-center">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/40 font-body-sm">
+<!-- ROW 1: JUST FILLED BUY (ADBE) - Highlighted with blue left-accent -->
+<tr class="h-11 bg-primary-container/10 border-l-4 border-l-primary-container hover:bg-primary-container/15 transition-colors">
+<td class="pl-3 pr-3 py-1.5 whitespace-nowrap">
+<div class="flex flex-col items-start gap-0.5">
+<span class="font-metric-md text-on-surface">Nov 14, 2026</span>
+<span class="flex items-center gap-1.5"><span class="text-outline font-metric-md text-xs">15:41 ET</span>
+<span class="px-1.5 py-0.2 rounded bg-primary-container text-on-primary font-label-sm text-[9px] uppercase tracking-wider font-semibold">New</span></span>
+</div>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="px-2 py-0.5 rounded text-[11px] font-metric-md font-semibold bg-primary-container/20 text-primary border border-primary/40">BUY</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<div class="flex items-center space-x-2">
+<div class="w-5 h-5 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-metric-md text-[10px] font-bold">
+                      AD
+                    </div>
+<div>
+<span class="font-metric-md font-semibold text-on-surface">ADBE</span>
+<span class="text-outline text-xs ml-1 font-body-sm">Adobe Inc.</span>
+</div>
+</div>
+<div class="text-[11px] text-outline mt-0.5 whitespace-normal font-body-sm max-w-[200px]"><div class="flex items-center space-x-1.5">
+<span class="text-on-surface-variant text-xs">Filled from Scenario Book rung: Buy Point</span>
+<a class="px-1.5 py-0.5 rounded bg-surface-container-high hover:bg-surface-variant border border-outline-variant text-[11px] font-metric-md text-primary flex items-center space-x-0.5 transition-colors" href="#">
+<span>#ORD-0142</span>
+<span class="material-symbols-outlined text-[12px]">open_in_new</span>
+</a>
+</div></div></td>
+<td class="px-2 py-1.5 whitespace-nowrap text-on-surface-variant font-body-sm">IBKR Main</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">20</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">$140.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">$1.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md font-medium text-tertiary-container">−$2,801.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface font-medium">$9,199.00</td>
+<td class="pr-3 pl-2 py-1.5 whitespace-nowrap text-center">
+<div class="flex items-center justify-center space-x-1">
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-on-surface transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-tertiary-container transition-colors" title="Delete">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+
+</tr>
+<!-- ROW 2: DIVIDEND (MSFT) -->
+<tr class="h-11 hover:bg-surface-container-high/60 transition-colors">
+<td class="pl-3 pr-2 py-1.5 whitespace-nowrap">
+<span class="font-metric-md text-on-surface">Nov 03, 2026</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="px-2 py-0.5 rounded text-[11px] font-metric-md font-semibold bg-secondary-container/20 text-secondary border border-secondary/40">DIVIDEND</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="font-metric-md font-semibold text-on-surface">MSFT</span>
+<span class="text-outline text-xs ml-1 font-body-sm">Microsoft Corp.</span>
+<div class="text-[11px] text-outline mt-0.5 whitespace-normal font-body-sm max-w-[200px]">Gross $41.50 · tax withheld $10.38 (25%)</div></td>
+<td class="px-2 py-1.5 whitespace-nowrap text-on-surface-variant font-body-sm">IBKR Main</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">—</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">—</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">—</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md font-medium text-secondary">+$31.12</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">$12,000.00</td>
+<td class="pr-3 pl-2 py-1.5 whitespace-nowrap text-center">
+<div class="flex items-center justify-center space-x-1">
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-tertiary-container transition-colors">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+
+</tr>
+<!-- ROW 3: BUY (MSFT) -->
+<tr class="h-11 hover:bg-surface-container-high/60 transition-colors">
+<td class="pl-3 pr-2 py-1.5 whitespace-nowrap">
+<span class="font-metric-md text-on-surface">Oct 28, 2026</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="px-2 py-0.5 rounded text-[11px] font-metric-md font-semibold bg-primary-container/20 text-primary border border-primary/40">BUY</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="font-metric-md font-semibold text-on-surface">MSFT</span>
+<span class="text-outline text-xs ml-1 font-body-sm">Microsoft</span>
+<div class="text-[11px] text-outline mt-0.5 whitespace-normal font-body-sm max-w-[200px]">Scheduled monthly DCA tranche</div></td>
+<td class="px-2 py-1.5 whitespace-nowrap text-on-surface-variant font-body-sm">IBKR Main</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">10</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">$415.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">$1.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md font-medium text-tertiary-container">−$4,151.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">$11,968.88</td>
+<td class="pr-3 pl-2 py-1.5 whitespace-nowrap text-center">
+<div class="flex items-center justify-center space-x-1">
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-tertiary-container transition-colors">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+
+</tr>
+<!-- ROW 4: DEPOSIT (USD Cash) -->
+<tr class="h-11 hover:bg-surface-container-high/60 transition-colors">
+<td class="pl-3 pr-2 py-1.5 whitespace-nowrap">
+<span class="font-metric-md text-on-surface">Oct 15, 2026</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="px-2 py-0.5 rounded text-[11px] font-metric-md font-semibold bg-surface-variant text-on-surface border border-outline-variant">DEPOSIT</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="font-metric-md font-semibold text-on-surface">USD Cash</span>
+<div class="text-[11px] text-outline mt-0.5 whitespace-normal font-body-sm max-w-[200px]">Monthly deposit (ILS → USD)</div></td>
+<td class="px-2 py-1.5 whitespace-nowrap text-on-surface-variant font-body-sm">IBKR Main</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">—</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">—</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">$0.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md font-medium text-secondary">+$12,000.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">$16,119.88</td>
+<td class="pr-3 pl-2 py-1.5 whitespace-nowrap text-center">
+<div class="flex items-center justify-center space-x-1">
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-tertiary-container transition-colors">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+
+</tr>
+<!-- ROW 5: FEE (OPEX) -->
+<tr class="h-11 hover:bg-surface-container-high/60 transition-colors">
+<td class="pl-3 pr-2 py-1.5 whitespace-nowrap">
+<span class="font-metric-md text-on-surface">Oct 02, 2026</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="px-2 py-0.5 rounded text-[11px] font-metric-md font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">FEE</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="font-metric-md font-semibold text-on-surface">OPEX</span>
+<div class="text-[11px] text-outline mt-0.5 whitespace-normal font-body-sm max-w-[200px]">Market data fee (NASDAQ / L2)</div></td>
+<td class="px-2 py-1.5 whitespace-nowrap text-on-surface-variant font-body-sm">IBKR Main</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">—</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">—</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">$4.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md font-medium text-amber-400">−$4.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">$4,119.88</td>
+<td class="pr-3 pl-2 py-1.5 whitespace-nowrap text-center">
+<div class="flex items-center justify-center space-x-1">
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-tertiary-container transition-colors">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+
+</tr>
+<!-- ROW 6: SELL (PYPL) -->
+<tr class="h-11 hover:bg-surface-container-high/60 transition-colors">
+<td class="pl-3 pr-2 py-1.5 whitespace-nowrap">
+<span class="font-metric-md text-on-surface">Sep 20, 2026</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="px-2 py-0.5 rounded text-[11px] font-metric-md font-semibold bg-tertiary-container/20 text-tertiary border border-tertiary/40">SELL</span>
+</td>
+<td class="px-2 py-1.5 whitespace-nowrap">
+<span class="font-metric-md font-semibold text-on-surface">PYPL</span>
+<span class="text-outline text-xs ml-1 font-body-sm">PayPal Holdings</span>
+<div class="text-[11px] text-outline mt-0.5 whitespace-normal font-body-sm max-w-[200px]">Tax-loss harvesting trim</div></td>
+<td class="px-2 py-1.5 whitespace-nowrap text-on-surface-variant font-body-sm">IBKR Main</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">15</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">$62.10</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-outline">$1.00</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md font-medium text-secondary">+$930.50</td>
+<td class="px-2 py-1.5 whitespace-nowrap text-right font-metric-md text-on-surface">$4,123.88</td>
+<td class="pr-3 pl-2 py-1.5 whitespace-nowrap text-center">
+<div class="flex items-center justify-center space-x-1">
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container-high text-outline hover:text-tertiary-container transition-colors">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Ledger Pagination Footer -->
+<div class="h-11 px-4 border-t border-outline-variant bg-surface-container-lowest/40 flex items-center justify-between select-none">
+<span class="font-body-sm text-body-sm text-outline">
+            Showing <span class="font-metric-md text-on-surface">1–25</span> of <span class="font-metric-md text-on-surface">312</span>
+</span>
+<div class="flex items-center space-x-2">
+<button class="flex items-center space-x-1 px-2.5 py-1 rounded bg-surface-container-high hover:bg-surface-variant text-on-surface-variant hover:text-on-surface text-body-sm font-body-sm border border-outline-variant disabled:opacity-40 transition-colors" disabled="">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+<span>Previous</span>
+</button>
+<button class="flex items-center space-x-1 px-2.5 py-1 rounded bg-surface-container-high hover:bg-surface-variant text-on-surface-variant hover:text-on-surface text-body-sm font-body-sm border border-outline-variant transition-colors">
+<span>Next</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- ANALYTICAL VISUALIZATION MODULES (Bento Grid: Heatmap + Monthly Returns) -->
+<section class="grid grid-cols-12 gap-5">
+<!-- CARD 1: Activity Heatmap (52 Weeks) -->
+<div class="col-span-12 lg:col-span-7 p-5 rounded-2xl bg-surface-container-low border border-outline-variant flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3">
+<div>
+<h3 class="font-headline-md text-headline-md font-semibold text-on-surface">Activity · 52 weeks</h3>
+<p class="font-body-sm text-body-sm text-outline">Cadence of executions, DCA rebalances and corporate actions</p>
+</div>
+<span class="font-metric-md text-xs text-primary px-2 py-0.5 rounded bg-primary/10 border border-primary/20">312 total events</span>
+</div>
+<!-- Heatmap Months Legend -->
+<div class="grid grid-cols-11 text-[11px] font-metric-md text-outline pl-5 mb-1.5 select-none">
+<span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span>
+</div>
+<!-- Heatmap Grid (7 rows for days of week, 52 columns) -->
+<div class="flex space-x-[3px] pb-1">
+<div class="flex flex-col justify-between text-[9px] font-metric-md text-outline pr-1 select-none">
+<span>M</span><span>W</span><span>F</span>
+</div>
+<!-- Simulated 52 columns of 7 squares -->
+<div class="flex space-x-[3px]">
+<!-- Loop 52 week columns -->
+<!-- Q1 Jan-Mar (Mix of low-mid) -->
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/70"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+<div class="flex flex-col space-y-[3px]"><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container/20"></div><div class="w-2 h-2 rounded-[2px] bg-primary-container"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div><div class="w-2 h-2 rounded-[2px] bg-surface-variant/40"></div></div>
+</div>
+</div>
+</div>
+<!-- Heatmap Legend Bottom Scale -->
+<div class="flex items-center justify-end space-x-2 text-[11px] font-metric-md text-outline mt-3 select-none">
+<span>Less</span>
+<div class="w-2.5 h-2.5 rounded-[2px] bg-surface-variant/40"></div>
+<div class="w-2.5 h-2.5 rounded-[2px] bg-primary-container/30"></div>
+<div class="w-2.5 h-2.5 rounded-[2px] bg-primary-container/60"></div>
+<div class="w-2.5 h-2.5 rounded-[2px] bg-primary-container"></div>
+<span>More</span>
+</div>
+</div>
+<!-- CARD 2: Monthly Returns Net of Deposits -->
+<div class="col-span-12 lg:col-span-5 p-5 rounded-2xl bg-surface-container-low border border-outline-variant flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<div>
+<h3 class="font-headline-md text-headline-md font-semibold text-on-surface">Monthly Returns</h3>
+<p class="font-body-sm text-body-sm text-outline">Net of external deposits &amp; fee subtractions</p>
+</div>
+<span class="font-metric-md text-xs font-semibold text-secondary px-2 py-0.5 rounded bg-secondary-container/10 border border-secondary/20">
+                +14.8% YTD
+              </span>
+</div>
+<!-- Return Bars Chart Container (Jan - Nov 2026) -->
+<div class="h-32 w-full pt-4 flex items-center justify-between relative">
+<!-- Zero Baseline rule -->
+<div class="absolute w-full top-1/2 left-0 h-[1px] bg-outline-variant z-0"></div>
+<!-- Bar 1: Jan (+3.4%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<span class="font-metric-md text-[10px] text-secondary mb-1">+3.4%</span>
+<div class="w-2.5 h-8 bg-secondary rounded-t-[2px] mb-[1px]"></div>
+<div class="h-8"></div>
+<span class="font-metric-md text-[10px] text-outline mt-1">Jan</span>
+</div>
+<!-- Bar 2: Feb (+1.8%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<span class="font-metric-md text-[10px] text-secondary mb-1">+1.8%</span>
+<div class="w-2.5 h-4 bg-secondary rounded-t-[2px] mb-[1px]"></div>
+<div class="h-8"></div>
+<span class="font-metric-md text-[10px] text-outline mt-1">Feb</span>
+</div>
+<!-- Bar 3: Mar (-2.1%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<div class="h-8"></div>
+<div class="w-2.5 h-5 bg-tertiary-container rounded-b-[2px] mt-[1px]"></div>
+<span class="font-metric-md text-[10px] text-tertiary-container mt-1">-2.1%</span>
+<span class="font-metric-md text-[10px] text-outline">Mar</span>
+</div>
+<!-- Bar 4: Apr (+4.2%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<span class="font-metric-md text-[10px] text-secondary mb-1">+4.2%</span>
+<div class="w-2.5 h-10 bg-secondary rounded-t-[2px] mb-[1px]"></div>
+<div class="h-8"></div>
+<span class="font-metric-md text-[10px] text-outline mt-1">Apr</span>
+</div>
+<!-- Bar 5: May (+0.9%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<span class="font-metric-md text-[10px] text-secondary mb-1">+0.9%</span>
+<div class="w-2.5 h-2.5 bg-secondary rounded-t-[2px] mb-[1px]"></div>
+<div class="h-8"></div>
+<span class="font-metric-md text-[10px] text-outline mt-1">May</span>
+</div>
+<!-- Bar 6: Jun (-1.4%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<div class="h-8"></div>
+<div class="w-2.5 h-3.5 bg-tertiary-container rounded-b-[2px] mt-[1px]"></div>
+<span class="font-metric-md text-[10px] text-tertiary-container mt-1">-1.4%</span>
+<span class="font-metric-md text-[10px] text-outline">Jun</span>
+</div>
+<!-- Bar 7: Jul (+2.8%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<span class="font-metric-md text-[10px] text-secondary mb-1">+2.8%</span>
+<div class="w-2.5 h-7 bg-secondary rounded-t-[2px] mb-[1px]"></div>
+<div class="h-8"></div>
+<span class="font-metric-md text-[10px] text-outline mt-1">Jul</span>
+</div>
+<!-- Bar 8: Aug (+5.1%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<span class="font-metric-md text-[10px] text-secondary mb-1">+5.1%</span>
+<div class="w-2.5 h-12 bg-secondary rounded-t-[2px] mb-[1px]"></div>
+<div class="h-8"></div>
+<span class="font-metric-md text-[10px] text-outline mt-1">Aug</span>
+</div>
+<!-- Bar 9: Sep (-0.8%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<div class="h-8"></div>
+<div class="w-2.5 h-2 bg-tertiary-container rounded-b-[2px] mt-[1px]"></div>
+<span class="font-metric-md text-[10px] text-tertiary-container mt-1">-0.8%</span>
+<span class="font-metric-md text-[10px] text-outline">Sep</span>
+</div>
+<!-- Bar 10: Oct (+3.1%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<span class="font-metric-md text-[10px] text-secondary mb-1">+3.1%</span>
+<div class="w-2.5 h-7.5 bg-secondary rounded-t-[2px] mb-[1px]"></div>
+<div class="h-8"></div>
+<span class="font-metric-md text-[10px] text-outline mt-1">Oct</span>
+</div>
+<!-- Bar 11: Nov (+1.2%) -->
+<div class="flex flex-col items-center h-full justify-center w-6 z-10">
+<span class="font-metric-md text-[10px] text-secondary mb-1">+1.2%</span>
+<div class="w-2.5 h-3.5 bg-secondary rounded-t-[2px] mb-[1px]"></div>
+<div class="h-8"></div>
+<span class="font-metric-md text-[10px] text-outline mt-1">Nov</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-[11px] font-metric-md text-outline pt-2 border-t border-outline-variant/50">
+<span>Benchmark: S&amp;P 500 (+12.2%)</span>
+<span class="text-secondary font-medium">vs S&amp;P 500: +2.6%</span>
+</div>
+</div>
+</section>
+<!-- REGULATORY DISCLAIMER FOOTER -->
+<footer class="pt-8 pb-4 text-center">
+<p class="font-body-sm text-body-sm text-outline">
+          Planning and tracking tool, not investment advice.
+        </p>
+</footer>
+</div>
+</main>
+<!-- BOTTOM DOCKED TOAST NOTIFICATION: ORDER FILL CONFIRMATION -->
+<div class="fixed bottom-6 right-6 z-50 flex items-center space-x-3.5 px-4 py-3 bg-surface-container-high border border-outline-variant rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.45)] transition-all transform duration-300" id="execution-toast">
+<div class="w-7 h-7 rounded-full bg-secondary-container/20 text-secondary border border-secondary/40 flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+</div>
+<div>
+<div class="flex items-center space-x-2">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Order filled</span>
+<span class="font-metric-md text-xs text-outline">· Just now</span>
+</div>
+<p class="font-body-sm text-xs text-on-surface-variant">
+        BUY 20 ADBE @ $140.00 booked to ledger
+      </p>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded transition-colors ml-2" onclick="document.getElementById('execution-toast').style.opacity = '0'; setTimeout(() =&gt; document.getElementById('execution-toast').remove(), 300)" title="Dismiss notification">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</body></html>
