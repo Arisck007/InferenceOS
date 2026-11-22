@@ -3,7 +3,7 @@
 Guidance for Claude Code when working in this repository. Read this file fully before starting any task.
 
 > **Source of truth:** `InferenceOS - Product Specification (v0.2).docx` (Nov 01, 2026).
-> When this file and the spec disagree, the spec wins. If the spec is ambiguous, check **§15 Open Decisions** and ask. Do not guess.
+> When this file and the spec disagree, the spec wins, except for decisions recorded in [docs/decisions.md](docs/decisions.md). If the spec is ambiguous, check **§15 Open Decisions** and ask. Do not guess.
 > **Project status:** Specification stage. There is no application code yet. Sections marked *(planned)* describe the intended setup, not files that exist today.
 
 ---
@@ -193,10 +193,11 @@ All of this lives in `src/engine/` *(planned)* as pure functions with exhaustive
 | `WITHDRAWAL` | amount, account, date | `−amount` (external flow) |
 | `DIVIDEND` | ticker, gross amount, tax withheld | `+(gross − tax)` |
 | `FEE` | amount | `−amount` |
+| `FX_CONVERSION` | from currency and amount, to currency and amount, fee | `−from amount`, `+to amount` (each in its own currency) |
 
 - **Dividend convention:** store **gross** and **tax withheld**. Cash receives **net**. Default withholding is **25%** (US dividends paid to Israeli residents), and the user can edit it.
 - Allowed types are a Postgres enum, mirrored in a Zod schema.
-- See §15 for the missing **FX conversion** type and other gaps.
+- `FX_CONVERSION` moves cash between ILS and USD and is not an external flow. Other gaps are listed in §15.
 
 ### 5.3 Performance
 
@@ -254,15 +255,15 @@ overbooked          = projectedCash < 0
 ### 5.6 Order lifecycle (state machine)
 
 ```
-DRAFT ─► PLANNED ─► SUBMITTED ─► PARTIALLY_FILLED ─► FILLED
-  │         │           │               │
-  └─────────┴───────────┴───────────────┴──► CANCELLED
-                        └───────────────┴──► FAILED | EXPIRED
+DRAFT ─► SUBMITTED ─► PARTIALLY_FILLED ─► FILLED
+  │           │               │
+  └───────────┴───────────────┴──► CANCELLED
+              └───────────────┴──► FAILED | EXPIRED
 ```
 
-- Journey 5 lets a user mark a Draft as Submitted directly, so `DRAFT → SUBMITTED` is also allowed.
-- **Sections:** Action Needed = Draft + Planned · Working = Submitted + Partially Filled · Completed = Filled · Exceptions = Cancelled + Failed + Expired.
-- **Fill** (Execute Order dialog): Book to Account, Executed Shares, Execution Date, Total Notional → order moves to Completed and **one matching BUY/SELL transaction is booked atomically** (one database transaction or RPC: no fill without its ledger row, and no ledger row without its fill).
+- A Submitted order can go straight to Filled when it fills in one execution.
+- **Sections:** Action Needed = Draft · Working = Submitted + Partially Filled · Completed = Filled · Exceptions = Cancelled + Failed + Expired.
+- **Fill** (Execute Order dialog): Book to Account, Executed Shares, Executed Price, Fees, Execution Date, Total Notional → a full fill moves to Completed, a partial fill stays in Working, and **one matching BUY/SELL transaction is booked atomically** (one database transaction or RPC: no fill without its ledger row, and no ledger row without its fill).
 - **Deleting an order record never changes the ledger.** The delete dialog must say so.
 - Cancelling asks "Cancel order?" and moves the order to Exceptions.
 - Implement transitions as a pure function `transition(order, event) → order | Error` with a test for every legal and illegal transition.
@@ -282,7 +283,7 @@ DRAFT ─► PLANNED ─► SUBMITTED ─► PARTIALLY_FILLED ─► FILLED
 ### 5.9 Numeric precision
 
 - Postgres: `numeric` for all money, prices, share counts and rates. **Never** `float`/`real`/`double precision`.
-- TypeScript: do not accumulate money in plain `number` sums across many rows without a defined rounding rule. Proposed: a decimal library (e.g. `decimal.js`). This adds to the spec's stack, so it needs the user's approval before adding it.
+- TypeScript: do not accumulate money in plain `number` sums across many rows without a defined rounding rule. Use `decimal.js` ([docs/decisions.md](docs/decisions.md)).
 - Display: thousands separators, percentages to two decimals, a currency symbol on every value, tabular (monospace) digits.
 
 ---
@@ -321,7 +322,7 @@ About 30 PostgreSQL tables in six groups:
 | UI | shadcn/ui on Radix UI primitives, Tailwind CSS, Lucide icons |
 | Charts | Recharts (line, bar, area, heatmap) |
 | Forms | React Hook Form + Zod |
-| Utilities | date-fns, Papa Parse |
+| Utilities | date-fns, Papa Parse, decimal.js (exact money math) |
 | Backend | Supabase: PostgreSQL + RLS, Auth, Edge Functions (Deno) |
 | Market data | Mock data module |
 | Testing | Vitest, Testing Library, jsdom |
@@ -513,7 +514,7 @@ Fixed left sidebar in four groups, plus a global top bar.
 - **Corrected reference:** [`docs/design/reference/transactions.html`](docs/design/reference/transactions.html) (+ `.png`) is the corrected Transactions ledger: notes under the symbol, Cash after column that adds up ($4,123.88 → $9,199.00), full-year heatmap. Prefer it over the Stitch version, whose notes were dropped.
 - **Known design debt (fix before handing screens to development):**
   - Earlier screens (Dashboard, Scenario Book, Orders, Portfolio…): an image logo that does not load, cut-off KPI values, 2024 dates, "Senior Desk / PRO ANALYST" placeholder, and "True Alpha" copy.
-  - Execute Order dialog has no executed-price field (§15 #2).
+  - Execute Order dialog is missing the executed-price and fees fields (§15 #2).
   - Several new screens still use jargon that DESIGN.md §8 forbids. Core User Flow board: about 15 phrases ("desk", "staging", "pod"). Interface States board: "telemetry", "deterministic", "isolated pod". Health Center: extra shell buttons (Quick Order, Export, Deposit), "Cluster US-East-1", "SHA-256", and the reconcile table shows ADBE 50 shs where it should be 70.
 
 ---
@@ -569,10 +570,10 @@ Found while reviewing spec v0.2. **Do not resolve these silently in code.** Ask 
 
 ### 15.1 Ledger and engine gaps (affect correctness)
 
-1. **No FX conversion transaction.** Israeli users deposit ILS and convert to USD at the broker. Without a `FX_CONVERSION` type (from-amount, to-amount, rate), USD cash in an ILS-funded account cannot reconcile within $1.
-2. **The Fill dialog has no executed price.** Limit orders can fill better than the limit. Without an executed-price field (and fees), the booked BUY uses the wrong cost. Proposed: Executed Price defaults to the limit price and can be edited; add Fees.
-3. **Partial fills are undefined.** Proposed: a fill smaller than the order books a transaction for the filled part and leaves the remainder in `PARTIALLY_FILLED`.
-4. **Draft vs. Planned are not distinguished.** Define what moves an order from Draft to Planned, or merge them.
+1. **FX conversion.** *Decided:* add an `FX_CONVERSION` transaction type ([docs/decisions.md](docs/decisions.md)).
+2. **Executed price.** *Decided:* the Fill dialog has an editable executed price (defaults to the limit price) and fees.
+3. **Partial fills.** *Decided:* book the filled part; the remainder stays `PARTIALLY_FILLED`.
+4. **Draft vs. Planned.** *Decided:* one status, `DRAFT`.
 5. **Worst-case weight convention.** The spec values the filled position at *today's* price against *today's* net liquidity. That is not a real stress case (rung 3 only fills if the price falls to $110, and the rest of the portfolio probably falls too). Proposed: keep the spec convention as the default so the fixture passes, and add an optional "at rung prices" stress view later.
 6. **Waterfall order within a funding class** (deepest rung first? newest first? user priority?) is unspecified.
 7. **"Fixed cash amount per event"** rung sizing is not defined.
