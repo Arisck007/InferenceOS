@@ -124,7 +124,7 @@ Label (label-md caps, secondary color) + info icon (popover with a one-sentence 
 | Family | Values |
 |---|---|
 | Transaction type | BUY (blue) · SELL (red) · DEPOSIT (neutral) · WITHDRAWAL (neutral) · DIVIDEND (green) · FEE (amber) |
-| Order status | Draft (neutral) · Planned (neutral, dashed border) · Submitted (blue) · Partially Filled (blue, half-dot) · Filled (green) · Cancelled (muted) · Failed (red) · Expired (amber) |
+| Order status | Draft (neutral) · Submitted (blue) · Partially Filled (blue, half-dot) · Filled (green) · Cancelled (muted) · Failed (red) · Expired (amber) |
 | Order section | Action Needed (amber) · Working (blue) · Completed (green) · Exceptions (red) |
 | Ladder status | OK (green) · BREACH (red, solid) · OFF (muted) · OVERBOOKED (amber) |
 | Funding class | Protected (blue outline, lock icon) · Flex (neutral) · Cancel-First (amber) |

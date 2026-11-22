@@ -164,6 +164,7 @@ Hosting: Vercel · Source: GitHub
 ├── CLAUDE.md                                         # Working rules for Claude Code: scope, financial rules, open decisions
 ├── InferenceOS - Product Specification (v0.2).docx   # Source of truth for the product
 ├── docs/
+│   ├── decisions.md                                  # Decisions made after the spec
 │   └── design/
 │       ├── DESIGN.md                                 # Design system: tokens, components, states, copy rules
 │       └── reference/
@@ -414,6 +415,7 @@ To report a vulnerability, use GitHub private vulnerability reporting where it i
 |---|---|
 | [Product Specification v0.2](InferenceOS%20-%20Product%20Specification%20%28v0.2%29.docx) | Problem, users, MVP, UX journeys, UI, architecture, business model, success metrics |
 | [CLAUDE.md](CLAUDE.md) | Rules, glossary, financial engine, data model, security, testing, open decisions |
+| [docs/decisions.md](docs/decisions.md) | Decisions made after the spec, with reasons |
 | [docs/design/DESIGN.md](docs/design/DESIGN.md) | Design tokens, components, badge families, interface states, copy rules |
 | [docs/design/reference/](docs/design/reference/) | Corrected screen references |
 
