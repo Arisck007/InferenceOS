@@ -1,0 +1,34 @@
+# macOS
+.DS_Store
+
+# Editors / tools
+.Rhistory
+.vscode/
+.idea/
+~$*
+
+# Secrets (never commit; keep .env.example with names only)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*credentials*.json
+*service-account*.json
+.claude/settings.local.json
+
+# Real financial records (never commit; fixtures must be fictional)
+/private/
+*statement*.pdf
+
+# Node / Vite
+node_modules/
+dist/
+coverage/
+*.log
+
+# Vercel / Supabase local
+.vercel/
+supabase/.branches/
+supabase/.temp/
