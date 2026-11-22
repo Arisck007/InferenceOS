@@ -4,7 +4,7 @@ Guidance for Claude Code when working in this repository. Read this file fully b
 
 > **Source of truth:** `InferenceOS - Product Specification (v0.2).docx` (Nov 01, 2026).
 > When this file and the spec disagree, the spec wins, except for decisions recorded in [docs/decisions.md](docs/decisions.md). If the spec is ambiguous, check **§15 Open Decisions** and ask. Do not guess.
-> **Project status:** Specification stage. There is no application code yet. Sections marked *(planned)* describe the intended setup, not files that exist today.
+> **Project status:** Application shell in place; features are not built yet. Sections marked *(planned)* describe the intended setup, not files that exist today.
 
 ---
 
@@ -367,7 +367,7 @@ Do not add dependencies outside this list without saying why and getting approva
 
 ---
 
-## 9. Commands *(planned; update once the repo exists)*
+## 9. Commands *(the `supabase` commands are planned)*
 
 ```bash
 npm install
@@ -390,7 +390,7 @@ npm run lint
 ```
 
 ```bash
-npx tsc --noEmit
+npm run typecheck
 ```
 
 ```bash

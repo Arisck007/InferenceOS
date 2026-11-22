@@ -62,12 +62,12 @@ Many are Israeli residents investing in US markets (often through Interactive Br
 | 1. Discovery | 1–3 | ✅ Done: [Product Specification v0.2](InferenceOS%20-%20Product%20Specification%20%28v0.2%29.docx) |
 | 2. Design | 4–5 | 🟡 In progress: Google Stitch screens, [design system](docs/design/DESIGN.md) |
 | 3. Architecture | 6–7 | 🟡 Defined in the spec and [CLAUDE.md](CLAUDE.md), not built yet |
-| 4. Setup | 8–9 | 🟡 Repo and branches created; app scaffold not started |
+| 4. Setup | 8–9 | 🟡 Application shell, tests and tooling in place; database not started |
 | 5. AI Integration | 10–12 | ⏳ Planned |
 | 6. Development | 13–15 | ⏳ Planned |
 | 7. Deployment | 16–18 | ⏳ Planned |
 
-**There is no application code in this repository yet.** The installation and usage sections below describe the planned setup, defined in the spec and `CLAUDE.md`. They will be updated as the code lands.
+The application shell runs locally: navigation, the portfolio selector, the currency switch and empty screens. The usage examples below describe the planned features.
 
 ---
 
@@ -161,27 +161,30 @@ Hosting: Vercel · Source: GitHub
 ```
 .
 ├── README.md
-├── CLAUDE.md                                         # Working rules for Claude Code: scope, financial rules, open decisions
+├── CLAUDE.md                                         # Working rules: scope, financial rules, open decisions
 ├── InferenceOS - Product Specification (v0.2).docx   # Source of truth for the product
 ├── docs/
-│   ├── decisions.md                                  # Decisions made after the spec
-│   └── design/
-│       ├── DESIGN.md                                 # Design system: tokens, components, states, copy rules
-│       └── reference/
-│           ├── transactions.html                     # Corrected Transactions screen (HTML reference)
-│           └── transactions.png
-└── .gitignore
+│   ├── decisions.md                                  # Technical decisions
+│   └── design/                                       # Design system and screen references
+├── src/
+│   ├── app/                                          # Routes, navigation and the portfolio and currency scope
+│   ├── components/                                   # Application shell and shared UI
+│   ├── mock/                                         # Mock data
+│   ├── pages/                                        # One lazily loaded file per screen
+│   ├── styles/                                       # Tailwind entry point
+│   └── test/                                         # Test setup
+├── index.html
+├── tailwind.config.js                                # Design tokens
+├── vite.config.ts
+└── package.json
 ```
 
 **Planned** (see [CLAUDE.md §8](CLAUDE.md)):
 
 ```
 src/
-├── app/          # router, providers, app shell
-├── pages/        # one lazily loaded folder per screen
 ├── engine/       # PURE financial logic: ledger, performance, scenario, orders, scanner, fx
 ├── data/         # Supabase client, query hooks
-├── components/   # shared UI (KpiTile, MoneyCell, ZoneBadge…)
 └── lib/          # formatting, dates, Zod schemas
 supabase/
 ├── migrations/   # every schema change, versioned
@@ -193,7 +196,7 @@ supabase/
 
 ## Installation
 
-### Read the project today
+**Prerequisites:** Node.js 22.13 or newer in the 22.x line, or 24.x, with npm and a Git client.
 
 ```bash
 git clone https://github.com/Arisck007/InferenceOS.git
@@ -203,60 +206,26 @@ git clone https://github.com/Arisck007/InferenceOS.git
 cd InferenceOS
 ```
 
-Start with this README, then [`CLAUDE.md`](CLAUDE.md) for the full rules, then [`docs/design/DESIGN.md`](docs/design/DESIGN.md) for the UI.
+```bash
+npm install
+```
 
-### Development setup (planned)
+```bash
+npm run dev
+```
 
-> These steps will work once the app scaffold (Phase 4) is in place.
+The app opens at `http://localhost:5173`. Local Supabase setup will be added with the database.
 
-**Prerequisites:** Node.js 20 LTS or newer, npm, the [Supabase CLI](https://supabase.com/docs/guides/cli), Docker (for local Supabase), and a Git client.
-
-1. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-2. Create your local environment file from the template. It holds public values only:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-   ```dotenv
-   VITE_SUPABASE_URL=http://127.0.0.1:54321
-   VITE_SUPABASE_ANON_KEY=<from `supabase start` output>
-   ```
-
-3. Start local Supabase and apply all migrations:
-
-   ```bash
-   supabase start
-   ```
-
-   ```bash
-   supabase db reset
-   ```
-
-4. Run the Edge Functions and the app:
-
-   ```bash
-   supabase functions serve
-   ```
-
-   ```bash
-   npm run dev
-   ```
-
-### Planned scripts
+### Scripts
 
 | Command | Purpose |
 |---|---|
 | `npm run dev` | Start the Vite development server |
-| `npm run build` | Production build |
-| `npm test` | Run Vitest unit and integration tests |
-| `npm run lint` | ESLint |
-| `npx tsc --noEmit` | Type-check |
+| `npm run build` | Type-check and create a production build |
+| `npm run preview` | Serve the production build |
+| `npm test` | Run the tests |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Run the TypeScript compiler |
 
 ---
 
@@ -332,8 +301,10 @@ The full specification is in [`docs/design/DESIGN.md`](docs/design/DESIGN.md). H
 - [x] Product specification v0.2, with problem validation, business model and success metrics
 - [x] `CLAUDE.md` working rules and the open-decisions list
 - [x] Design system and core-flow screens in Google Stitch
-- [ ] Settle the open decisions ([CLAUDE.md §15](CLAUDE.md)): FX conversion transactions, the executed price on fills, partial fills, the worst-case convention
-- [ ] Phase 4: scaffold the app, Supabase project, migrations and CI
+- [x] Decisions on currency conversion, executed prices, partial fills and order statuses ([docs/decisions.md](docs/decisions.md))
+- [x] Application shell with navigation, portfolio scope and tests
+- [ ] Settle the remaining open decisions ([CLAUDE.md §15](CLAUDE.md))
+- [ ] Phase 4: Supabase project, migrations and CI
 - [ ] Phase 6: build the V1 features in this order: schema + RLS → auth and shell → ledger engine → holdings and prices → Dashboard → USD/ILS → Scenario Book → Orders → Find the Dip → Health Center
 - [ ] Pilot with 20–30 analytical investors
 - [ ] Phase 5: AI analyst crew (CrewAI) and an InferenceOS MCP server, read-only
